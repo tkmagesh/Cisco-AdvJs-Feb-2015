@@ -68,6 +68,116 @@ print("Functional Programming techniques", function(){
             console.table(products);
         });
     });
+    print("Filtering", function(){
+        function filter(list, criteriaFn){
+            var result = [];
+            for(var i=0; i<list.length; i++)
+                if (criteriaFn(list[i]))
+                    result.push(list[i]);
+            return result;
+        }
+        var costlyProductCriteria = function(product){
+            return product.cost > 50;
+        }
+        print("Costly Products", function(){
+            var costlyProducts = filter(products,costlyProductCriteria);
+            console.table(costlyProducts);
+        });
+        print("Affordable Products", function(){
+            /*var affordableProductCriteria = function(product){
+                return !cosltyProductCriteria(product);
+            }*/
+            /*function negate(criteriaFn){
+                return function(item){
+                    return !criteriaFn(item);
+                }
+            }*/
+            function negate(criteriaFn){
+                return function(){
+                    return !criteriaFn.apply(this, arguments);
+                }
+            }
+            var affordableProductCriteria = negate(costlyProductCriteria);
+            var affordableProducts = filter(products,affordableProductCriteria);
+            console.table(affordableProducts);
+        });
+    });
+
+    print("Any", function(){
+        function any(list, predicate){
+            for(var i=0; i<list.length; i++)
+                if (predicate(list[i])) return true;
+            return false;
+        }
+        var costlyProductPredicate = function(product){
+           return product.cost >= 50;
+        }
+        console.log("Are there any costly products?", any(products, costlyProductPredicate));
+    });
+    print("All", function(){
+        function all(list, predicate){
+            for(var i=0; i<list.length; i++)
+                if (!predicate(list[i])) return false;
+            return true;
+        }
+        var costlyProductPredicate = function(product){
+           return product.cost >= 50;
+        }
+        console.log("Are all the products costly?", all(products, costlyProductPredicate));
+    });
+    print ("Sum", function(){
+        function sum(list, valueSelectorFn){
+            var result = 0;
+            for(var i=0; i<list.length;i++)
+                result += valueSelectorFn(list[i]);
+            return result;
+        }
+        function productValueSelector (product){
+            return product.cost * product.units;
+        }
+        console.log("Sum of product value [cost * units]", sum(products, productValueSelector));
+    });
+    //min
+    //max
+    print("GroupBy", function(){
+        function groupBy(list, keySelectorFn){
+            var result = {};
+            for(var i=0; i< list.length;i++){
+                var key = keySelectorFn(list[i]);
+                if (typeof result[key] === "undefined")
+                    result[key] = [];
+                result[key].push(list[i]);
+            }
+            return result;
+        }
+        print("Products By Category", function(){
+            var categoryKeySelector = function(product){ return product.category; };
+            var productsByCategory = groupBy(products, categoryKeySelector);
+            for(var key in productsByCategory){
+                print("Product with Category - " + key, function(){
+                    console.table(productsByCategory[key]);
+                });
+            }
+        });
+
+        print("Products By Cost", function(){
+            var costKeySelector = function(product){
+                return product.cost > 50 ? "costly" : "affordable"
+            };
+            var productsByCost = groupBy(products, costKeySelector);
+            for(var key in productsByCost){
+                print("Product with Cost - " + key, function(){
+                    console.table(productsByCost[key]);
+                });
+            }
+        });
+
+
+
+
+
+
+    });
 });
 
 
