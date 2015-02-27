@@ -180,4 +180,25 @@ print("Functional Programming techniques", function(){
     });
 });
 
+function memoize(fn){
+   var cache = {};
+   return function(){
+       var key = JSON.stringify(arguments);
+       if (typeof cache[key] === "undefined")
+          cache[key] = fn.apply(this,arguments);
+       return cache[key];
+   }
+}
+
+function add(x,y){
+    console.log("processing");
+    return x + y;
+}
+
+var cachedAdd = memoize(add);
+
+cachedAdd(100,200);
+cachedAdd(100,200);
+
+
 
